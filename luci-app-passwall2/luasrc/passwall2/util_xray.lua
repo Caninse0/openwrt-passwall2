@@ -146,10 +146,6 @@ function gen_outbound(flag, node, tag, proxy_table)
 			node.stream_security = "tls"
 		end
 
-		if node.protocol == "http" and node.stream_security == "tls" then
-			node.transport = "raw"
-		end
-
 		if remarks then
 			tag = tag .. ":" .. remarks
 		end

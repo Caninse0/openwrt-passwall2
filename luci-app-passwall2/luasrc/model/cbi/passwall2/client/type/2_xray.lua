@@ -524,6 +524,7 @@ o:depends({ protocol = "vless" })
 o:depends({ protocol = "socks" })
 o:depends({ protocol = "shadowsocks" })
 o:depends({ protocol = "trojan" })
+o:depends({ protocol = "http" })
 
 o = s:option(Value, "wireguard_public_key", translate("Public Key"))
 o:depends({ protocol = "wireguard" })
