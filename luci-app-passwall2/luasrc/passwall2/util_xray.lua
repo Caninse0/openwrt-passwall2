@@ -115,7 +115,7 @@ function gen_outbound(flag, node, tag, proxy_table)
 		else
 			dialer_proxy_tag = proxy_tag
 		end
-		
+
 		if node.type == "Xray" then
 			if node.tls and node.tls == "1" then
 				node.stream_security = "tls"
@@ -308,9 +308,13 @@ function gen_outbound(flag, node, tag, proxy_table)
 					local finalmask = {}
 					local TP = node.transport
 					if TP == "mkcp" then
+						local s = { type = "mkcp-legacy" }
+						if node.mkcp_seed and node.mkcp_seed ~= "" then
+							s.settings = { value = node.mkcp_seed }
+						end
+						local udp = { s }
 						local map = {none = "none", srtp = "srtp", utp = "utp", ["wechat-video"] = "wechat",
 							dtls = "dtls", wireguard = "wireguard", dns = "dns"}
-						local udp = {}
 						if node.mkcp_guise and node.mkcp_guise ~= "none" then
 							local g = { type = "mkcp-legacy" }
 							g.settings = { header = map[node.mkcp_guise] }
@@ -319,11 +323,6 @@ function gen_outbound(flag, node, tag, proxy_table)
 							end
 							udp[#udp+1] = g
 						end
-						local s = { type = "mkcp-legacy" }
-						if node.mkcp_seed and node.mkcp_seed ~= "" then
-							s.settings = { value = node.mkcp_seed }
-						end
-						udp[#udp+1] = s
 						finalmask.udp = udp
 					elseif TP == "hysteria" then
 						local udp = {}
@@ -808,9 +807,13 @@ function gen_config_server(node)
 					finalmask = (function()
 						local finalmask = {}
 						if node.transport == "mkcp" then
+							local s = { type = "mkcp-legacy" }
+							if node.mkcp_seed and node.mkcp_seed ~= "" then
+								s.settings = { value = node.mkcp_seed }
+							end
+							local udp = { s }
 							local map = {none = "none", srtp = "srtp", utp = "utp", ["wechat-video"] = "wechat",
 								dtls = "dtls", wireguard = "wireguard", dns = "dns"}
-							local udp = {}
 							if node.mkcp_guise and node.mkcp_guise ~= "none" then
 								local g = { type = "mkcp-legacy" }
 								g.settings = { header = map[node.mkcp_guise] }
@@ -819,11 +822,6 @@ function gen_config_server(node)
 								end
 								udp[#udp+1] = g
 							end
-							local s = { type = "mkcp-legacy" }
-							if node.mkcp_seed and node.mkcp_seed ~= "" then
-								s.settings = { value = node.mkcp_seed }
-							end
-							udp[#udp+1] = s
 							finalmask.udp = udp
 						elseif node.transport == "hysteria" then
 							local udp = {}
@@ -980,7 +978,7 @@ function gen_config(var)
 	local routing = nil
 	local observatory = nil
 	local burstObservatory = nil
- 	local strategy = nil
+	local strategy = nil
 	local COMMON = {}
 
 	local CACHE_TEXT_FILE = CACHE_PATH .. "/cache_" .. flag .. ".txt"
@@ -1251,7 +1249,7 @@ function gen_config(var)
 		table.insert(rules, { inboundTag = { inbound_tag }, balancerTag = balancer_tag })
 		return balancer_tag, loopback_outbound
 	end
-	
+
 	function set_outbound_detour(node, outbound, outbounds_table)
 		if not node or not outbound or not outbounds_table then return nil end
 		local default_outTag = outbound.tag
@@ -1682,7 +1680,7 @@ function gen_config(var)
 				rules = {}
 			}
 		end
-	
+
 		local dns_host = ""
 		if flag == "global" then
 			dns_host = api.uci_get_c("@global[0]", "dns_hosts") or ""
@@ -1706,7 +1704,7 @@ function gen_config(var)
 				end
 			end)
 		end
-	
+
 		local _remote_dns = {
 			tag = remote_dns_tag,
 			queryStrategy = (remote_dns_query_strategy and remote_dns_query_strategy ~= "") and remote_dns_query_strategy or "UseIPv4"
@@ -1856,12 +1854,12 @@ function gen_config(var)
 				outboundTag = "dns-out"
 			})
 		end
-	
+
 		local default_dns_tag_name = remote_dns_tag
 		if not COMMON.default_outbound_tag or COMMON.default_outbound_tag == "direct" then
 			default_dns_tag_name = direct_dns_tag
 		end
-	
+
 		if dns_servers and #dns_servers > 0 then
 			-- Default DNS logic
 			local default_dns_server = nil
@@ -2062,7 +2060,7 @@ function gen_config(var)
 		udp_inbound.settings.allowedNetwork = "udp"
 		table.insert(inbounds, udp_inbound)
 	end
-	
+
 	if inbounds or outbounds then
 		local config = {
 			env = (function()
@@ -2136,7 +2134,7 @@ function gen_config(var)
 		for index, value in ipairs(config.outbounds) do
 			local s = value.settings
 			if not value["_flag_proxy_tag"] and value["_id"] and s and not NO_RUN and
-			((s.vnext and s.vnext[1] and s.vnext[1].address and s.vnext[1].port) or 
+			((s.vnext and s.vnext[1] and s.vnext[1].address and s.vnext[1].port) or
 			(s.servers and s.servers[1] and s.servers[1].address and s.servers[1].port) or
 			(s.peers and s.peers[1] and s.peers[1].endpoint) or
 			(s.address and s.port)) then
@@ -2166,7 +2164,7 @@ function gen_proto_config(var)
 	local server_port = var["server_port"]
 	local server_username = var["server_username"]
 	local server_password = var["server_password"]
-	
+
 	local inbounds = {}
 	local outbounds = {}
 	local routing = nil
@@ -2192,7 +2190,7 @@ function gen_proto_config(var)
 		end
 		table.insert(inbounds, inbound)
 	end
-	
+
 	if local_http_address and local_http_port then
 		local inbound = {
 			listen = local_http_address,
@@ -2212,7 +2210,7 @@ function gen_proto_config(var)
 		end
 		table.insert(inbounds, inbound)
 	end
-	
+
 	if server_proto ~= "nil" and server_address ~= "nil" and server_port ~= "nil" then
 		local outbound = {
 			protocol = server_proto,
@@ -2248,7 +2246,7 @@ function gen_proto_config(var)
 			sockopt = {mark = 255}
 		}
 	})
-	
+
 	local config = {
 		log = {
 			loglevel = "warning"
