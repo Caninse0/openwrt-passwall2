@@ -62,7 +62,8 @@ function gen_outbound(flag, node, tag, proxy_table)
 		if proxy_table ~= nil and type(proxy_table) == "table" then
 			proxy_tag = proxy_table.tag or nil
 			fragment = (proxy_table.fragment and not node.hysteria2_realms) and true or nil
-			noise = (proxy_table.noise and not node.hysteria2_realms) and true or nil
+			-- noise = (proxy_table.noise and not node.hysteria2_realms) and true or nil
+			noise = proxy_table.noise and true or nil
 		end
 
 		if node.type ~= "Xray" then
@@ -418,7 +419,8 @@ function gen_outbound(flag, node, tag, proxy_table)
 						finalmask.tcp = finalmask.tcp or {}
 						finalmask.tcp[#finalmask.tcp+1] = api.clone(fragment_table)
 					end
-					if noise and noise_table and (TP == "mkcp" or (TP == "xhttp" and node.alpn == "h3")) then
+					-- if noise and noise_table and (TP == "mkcp" or (TP == "xhttp" and node.alpn == "h3")) then
+					if noise and noise_table and (TP == "mkcp" or TP == "hysteria" or (TP == "xhttp" and node.alpn == "h3")) then
 						finalmask.udp = finalmask.udp or {}
 						finalmask.udp[#finalmask.udp+1] = api.clone(noise_table)
 					end
