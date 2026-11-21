@@ -1048,7 +1048,7 @@ function gen_config(var)
 		end)
 		noise_table = #noises > 0 and {
 			type = "noise",
-			settings = { reset = 0, noise = noises }
+			settings = { reset = "60-180", noise = noises }
 		} or nil
 	end
 
