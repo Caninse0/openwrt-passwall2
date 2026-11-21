@@ -111,7 +111,7 @@ jobs:
 
       - name: Initialization environment
         run: |
-          url_sdk="https://downloads.openwrt.org/snapshots/targets/x86/64/openwrt-sdk-x86-64_gcc-14.4.0_musl.Linux-x86_64.tar.zst"
+          url_sdk="https://downloads.openwrt.org/snapshots/targets/x86/64/openwrt-sdk-x86-64_gcc-15.3.0_musl.Linux-x86_64.tar.zst"
           wget $url_sdk
           file_name=$(echo $url_sdk | awk -F/ '{print $NF}')
           mkdir sdk
@@ -258,10 +258,10 @@ jobs:
       matrix:
         include:
           - platform: x86_64
-            url_sdk: https://downloads.openwrt.org/snapshots/targets/x86/64/openwrt-sdk-x86-64_gcc-14.4.0_musl.Linux-x86_64.tar.zst
+            url_sdk: https://downloads.openwrt.org/snapshots/targets/x86/64/openwrt-sdk-x86-64_gcc-15.3.0_musl.Linux-x86_64.tar.zst
 
           - platform: aarch64_generic
-            url_sdk: https://downloads.openwrt.org/snapshots/targets/rockchip/armv8/openwrt-sdk-rockchip-armv8_gcc-14.4.0_musl.Linux-x86_64.tar.zst
+            url_sdk: https://downloads.openwrt.org/snapshots/targets/rockchip/armv8/openwrt-sdk-rockchip-armv8_gcc-15.3.0_musl.Linux-x86_64.tar.zst
 
     steps:
       - name: Initialization environment
